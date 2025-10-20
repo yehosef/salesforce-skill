@@ -1,0 +1,120 @@
+# Salesforce PR Validation
+# Place this file in: .github/workflows/validate-pr.yml
+# Validates pull requests before merging
+
+name: Validate Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - master
+      - develop
+
+jobs:
+  validate-pr:
+    name: Validate Salesforce Changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli@latest
+          sf version
+
+      - name: Authorize Sandbox Org
+        run: |
+          echo "${{ secrets.SANDBOX_AUTH_URL }}" > auth_url.txt
+          sf org login sfdx-url -f auth_url.txt -a sandbox
+          rm auth_url.txt
+
+      - name: Check What Changed
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            src/**
+
+      - name: List Changed Files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "Changed files:"
+          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+
+      - name: Validate Deployment
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "🔍 Validating changes..."
+          sf project deploy start -d src/ -o sandbox --dry-run --test-level RunLocalTests --wait 30
+
+      - name: Run Tests
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "🧪 Running tests..."
+          sf apex test run -o sandbox -c --test-level RunLocalTests --wait 20
+
+      - name: Check Code Coverage
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "📊 Checking code coverage..."
+          sf apex get test -o sandbox -c
+
+      - name: Comment on PR
+        if: always() && steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const emoji = status === 'success' ? '✅' : '❌';
+            const message = status === 'success'
+              ? 'All validations passed! Ready to merge.'
+              : 'Validation failed. Please check the logs.';
+
+            const output = `
+            ## ${emoji} Salesforce Validation Results
+
+            **Status:** ${message}
+
+            ### What was validated:
+            - ✓ Deployment validation (dry-run)
+            - ✓ Apex test execution
+            - ✓ Code coverage check
+
+            <details>
+            <summary>Changed Files</summary>
+
+            \`\`\`
+            ${{ steps.changed-files.outputs.all_changed_files }}
+            \`\`\`
+            </details>
+
+            [View full logs →](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+
+      - name: Fail if validation failed
+        if: failure()
+        run: |
+          echo "::error::PR validation failed. Please fix the issues before merging."
+          exit 1
+
+# Setup Instructions:
+# 1. Add SANDBOX_AUTH_URL secret to your repository
+# 2. Get auth URL: sf org display -o <sandbox-org> --verbose
+# 3. Copy "Sfdx Auth Url" value
+# 4. Go to Settings → Secrets → Add SANDBOX_AUTH_URL
+# 5. Commit this file and create a PR to test it
