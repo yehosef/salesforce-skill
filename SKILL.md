@@ -155,29 +155,156 @@ Reference `assets/salesforce-ci.yml` and `assets/validate-pr.yml` for ready-to-u
 3. Get auth URL: `sf org display -o <org> --verbose`
 4. Push to trigger automated deployments
 
+### 9. Data Migration & Duplicate Management
+
+Reference `references/data-migration-guide.md` and `references/duplicate-detection.md` for comprehensive guidance.
+
+**Data Migration:**
+- Use SFDMU for complex parent-child relationships
+- Export with relationships: `scripts/export_data.py "Account,Contact" <org> ./exports`
+- Handles external IDs automatically
+- Creates import plans for Data Loader
+
+**Duplicate Detection:**
+- Find duplicates: `scripts/find_duplicates.py Contact "Email" <org>`
+- Groups duplicates by match fields
+- Recommends master record for merging
+- Exports to CSV for review
+
+**Best Practices:**
+- Use external IDs for upsert operations
+- SFDMU handles relationship mapping automatically
+- Always backup before mass data operations
+
+### 10. Performance Profiling & Optimization
+
+Reference `references/performance-tuning.md` for optimization strategies.
+
+**SOQL Profiling:**
+- Profile queries: `scripts/profile_soql.py "<SOQL>" <org>`
+- Shows execution time, selectivity, and recommendations
+- Identifies missing indexes and anti-patterns
+
+**Apex Performance:**
+- Analyze logs: `scripts/analyze_apex_performance.py ./debug-log.txt`
+- Finds CPU hotspots and heap usage
+- Shows governor limit usage by method
+
+**Slow Query Detection:**
+- Find slow queries: `scripts/find_slow_queries.sh ./logs 1000`
+- Scans debug logs for queries >1000ms
+- Generates optimization recommendations
+
+**Quick Wins:**
+- Use indexed fields in WHERE clauses
+- Bulkify all triggers and loops
+- Move SOQL outside loops
+- Use Maps for lookups instead of nested loops
+
+### 11. Rollback & Disaster Recovery
+
+Reference `references/rollback-procedures.md` for comprehensive rollback strategies.
+
+**Pre-Deployment Snapshots:**
+- Create snapshot: `scripts/snapshot_org.sh <org> ./backups/snapshot-$(date +%Y-%m-%d)`
+- Captures all metadata for rollback
+- Includes Git commit hash for traceability
+
+**Rollback Deployment:**
+- Rollback: `scripts/rollback_deployment.sh <org> ./backups/snapshot-2025-10-19`
+- Creates pre-rollback snapshot automatically
+- Runs tests after rollback
+- Full audit trail
+
+**Emergency Data Recovery:**
+- Quick restore: `scripts/emergency_rollback.py Account ./backup-accounts.csv <org>`
+- Shows diff before applying
+- Validates restored data
+- Works with any sobject
+
+**Best Practices:**
+- Always snapshot before production deployments
+- Test rollback procedures in sandbox
+- Maintain backup retention policy (90 days minimum)
+- Document rollback decision criteria
+
+### 12. Org Health Monitoring
+
+**Comprehensive Health Check:**
+- Run check: `scripts/org_health_check.py <org>`
+- Health score (0-100) with recommendations
+- Checks API limits, storage, code coverage
+- Identifies performance issues
+
+**Continuous Monitoring:**
+- Monitor limits: `scripts/org_limits_monitor.py <org> --alert-threshold 80`
+- Tracks API usage, storage, async jobs
+- Configurable alert thresholds
+- Export history for trending analysis
+
+**Key Metrics Monitored:**
+- Daily API requests usage
+- Data storage (MB)
+- File storage (MB)
+- Apex code coverage
+- Failed tests
+- Active triggers/workflows
+
 ## Resources
 
 This skill includes automation scripts, comprehensive references, and templates:
 
 ### scripts/
+
+**Core Automation:**
 - `query_soql.py` - Execute SOQL and format results as markdown table
 - `deploy_and_test.sh` - Automated deploy-with-tests workflow with preview
 - `run_tests.py` - Execute Apex tests and format results with coverage
 - `retrieve_metadata.sh` - Bulk metadata retrieval for multiple types
-- `compare_orgs.sh` - **NEW** Compare metadata between two orgs
-- `seed_scratch_org.sh` - **NEW** Seed scratch org with data using SFDMU
+
+**Phase 1 (Environment Management):**
+- `compare_orgs.sh` - Compare metadata between two orgs
+- `seed_scratch_org.sh` - Seed scratch org with data using SFDMU
+
+**Phase 2 (Data & Migration):**
+- `export_data.py` - **NEW** Export data with relationships to CSV
+- `find_duplicates.py` - **NEW** Find duplicate records with merge recommendations
+
+**Phase 2 (Performance):**
+- `profile_soql.py` - **NEW** Analyze SOQL query performance
+- `analyze_apex_performance.py` - **NEW** Parse debug logs for performance bottlenecks
+- `find_slow_queries.sh` - **NEW** Identify slow queries in debug logs
+
+**Phase 2 (Rollback):**
+- `snapshot_org.sh` - **NEW** Create metadata snapshot before deployment
+- `rollback_deployment.sh` - **NEW** Rollback to previous snapshot
+- `emergency_rollback.py` - **NEW** Quick data restoration from backup
+
+**Phase 2 (Monitoring):**
+- `org_health_check.py` - **NEW** Comprehensive org health analysis
+- `org_limits_monitor.py` - **NEW** Monitor API limits and usage
 
 ### references/
+
+**Core References:**
 - `sf-cli-reference.md` - Complete sf command reference
 - `soql-patterns.md` - SOQL optimization patterns and examples
 - `deployment-guide.md` - Deployment and retrieval best practices
 - `testing-guide.md` - Apex testing strategies and patterns
 - `governor-limits.md` - Salesforce limits and avoidance strategies
 - `metadata-types.md` - Common metadata types for deployment
-- `common-errors.md` - **NEW** Top 50+ Salesforce errors with solutions
+
+**Phase 1:**
+- `common-errors.md` - Top 50+ Salesforce errors with solutions
+
+**Phase 2:**
+- `data-migration-guide.md` - **NEW** SFDMU, Data Loader, external IDs, relationships
+- `duplicate-detection.md` - **NEW** Matching rules, fuzzy matching, deduplication
+- `performance-tuning.md` - **NEW** SOQL optimization, CPU/heap, bulkification
+- `rollback-procedures.md` - **NEW** Rollback strategies, disaster recovery, backups
 
 ### assets/
 - `apex-test-template.cls` - Template for new Apex test classes
 - `package-xml-template.xml` - Package.xml template for metadata retrieval
-- `salesforce-ci.yml` - **NEW** GitHub Actions CI/CD pipeline
-- `validate-pr.yml` - **NEW** GitHub Actions PR validation workflow
+- `salesforce-ci.yml` - GitHub Actions CI/CD pipeline
+- `validate-pr.yml` - GitHub Actions PR validation workflow
