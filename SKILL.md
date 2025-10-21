@@ -127,12 +127,49 @@ Reference `references/common-errors.md` for comprehensive error solutions.
 - View governor limit usage in debug logs
 - Analyze test failures with detailed error messages
 
-### 7. Org Comparison & Environment Management
+### 7. Org Comparison & Report Management
 
-**Compare Metadata Between Orgs:**
-- Use `scripts/compare_orgs.sh <source-org> <target-org>` to identify differences
-- Shows components only in source, only in target, and modified
-- Helps ensure sandbox and production stay in sync
+**Compare Metadata Between Orgs (with Reports):**
+- Use `scripts/compare_orgs_and_report.sh <source-org> <target-org> [metadata-types]` to generate stored reports
+- Automatically saves detailed comparison reports to `.claude/reports/org-comparison/`
+- Each run gets a unique timestamp-based ID (YYYY-MM-DD-HHMM)
+- Includes diffs, metadata, artifacts for historical tracking
+
+**Example:**
+```bash
+./scripts/compare_orgs_and_report.sh breslov-sandbox breslov-production
+```
+
+**View Reports:**
+```bash
+# View latest report
+./scripts/view-latest-report.sh org-comparison
+
+# List all runs
+./scripts/list-reports.sh org-comparison
+
+# Compare two runs side-by-side
+./scripts/compare-reports.sh org-comparison 2025-10-21-1648 2025-10-24-0915
+```
+
+**Interactive Comparison (Legacy):**
+- Use `scripts/compare_orgs.sh <source-org> <target-org>` for interactive mode
+- Shows real-time differences and prompts for detailed diffs
+- Does not save reports (use `compare_orgs_and_report.sh` for persistent reports)
+
+**Report Structure:**
+```
+.claude/reports/org-comparison/
+├── runs/
+│   ├── 2025-10-21-1648/
+│   │   ├── report.md           # Human-readable report
+│   │   ├── metadata.json       # Machine-readable metadata
+│   │   ├── diffs/              # Individual file diffs
+│   │   └── artifacts/          # Retrieved metadata
+│   ├── 2025-10-24-0915/
+│   └── latest -> 2025-10-24-0915/  # Symlink to most recent
+└── README.md
+```
 
 **Scratch Org Data Seeding:**
 - Use `scripts/seed_scratch_org.sh <source-org> <scratch-org>` for quick setup
@@ -254,6 +291,14 @@ Reference `references/rollback-procedures.md` for comprehensive rollback strateg
 
 This skill includes automation scripts, comprehensive references, and templates:
 
+### lib/
+
+**Report Management Framework:**
+- `report-manager.sh` - Standardized report generation and management library
+  - Used by all reporting tools for consistent output structure
+  - Manages timestamped runs, metadata tracking, and report indices
+  - Source this library in your own scripts for report capabilities
+
 ### scripts/
 
 **Core Automation:**
@@ -263,8 +308,14 @@ This skill includes automation scripts, comprehensive references, and templates:
 - `retrieve_metadata.sh` - Bulk metadata retrieval for multiple types
 
 **Phase 1 (Environment Management):**
-- `compare_orgs.sh` - Compare metadata between two orgs
+- `compare_orgs.sh` - Compare metadata between two orgs (interactive)
+- `compare_orgs_and_report.sh` - **NEW** Compare orgs and save detailed timestamped reports
 - `seed_scratch_org.sh` - Seed scratch org with data using SFDMU
+
+**Report Management Tools:**
+- `view-latest-report.sh` - **NEW** View the latest report for any tool
+- `list-reports.sh` - **NEW** List all historical runs for a tool
+- `compare-reports.sh` - **NEW** Compare two report runs side-by-side
 
 **Phase 2 (Data & Migration):**
 - `export_data.py` - **NEW** Export data with relationships to CSV
