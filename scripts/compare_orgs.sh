@@ -1,6 +1,23 @@
 #!/bin/bash
-# Compare metadata between two Salesforce orgs
+# Compare metadata between two Salesforce orgs (Interactive)
 # Shows what's different between source and target orgs
+#
+# Requirements:
+#   - Salesforce CLI (sf) v2.x+ installed
+#   - Authenticated to both source and target orgs
+#   - bash, grep, diff, sed commands available
+#
+# Safety: READ-ONLY
+#   This script only reads and compares metadata.
+#   No changes are made to either org.
+#
+# Usage:
+#   ./compare_orgs.sh sandbox production
+#   ./compare_orgs.sh dev-sandbox uat-sandbox "ApexClass,ApexTrigger"
+#
+# Note:
+#   - Use compare_orgs_and_report.sh for automated reports
+#   - This version requires interactive prompts for detailed diffs
 
 set -e
 

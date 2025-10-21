@@ -1,6 +1,25 @@
 #!/bin/bash
 # Create a metadata snapshot of Salesforce org before deployment
 # Useful for rollback and disaster recovery
+#
+# Requirements:
+#   - Salesforce CLI (sf) v2.x+ installed
+#   - Authenticated Salesforce org via: sf org login web -a <org-alias>
+#   - Write permissions for output directory
+#   - git command available (optional, for commit hash)
+#
+# Safety: READ-ONLY (with local file creation)
+#   This script only reads metadata from org and saves locally.
+#   No changes are made to the org.
+#
+# Usage:
+#   ./snapshot_org.sh production ./backups/prod-2025-10-20
+#   ./snapshot_org.sh sandbox ./backups/sandbox-$(date +%Y-%m-%d)
+#
+# Output:
+#   - package.xml: Metadata manifest
+#   - src/: All retrieved metadata
+#   - snapshot-info.json: Snapshot metadata (timestamp, git commit, etc)
 
 set -e
 

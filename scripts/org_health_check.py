@@ -9,6 +9,14 @@ Usage:
     ./org_health_check.py my-org
     ./org_health_check.py production --detailed
 
+Requirements:
+    - Salesforce CLI (sf) v2.x+ installed
+    - Python 3.8+
+    - Authenticated Salesforce org via: sf org login web -a <org-alias>
+
+Safety: READ-ONLY
+    Reads org metadata and limits only. No data is modified.
+
 Features:
     - API limits usage
     - Data storage usage

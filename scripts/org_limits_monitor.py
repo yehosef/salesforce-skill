@@ -9,6 +9,14 @@ Usage:
     ./org_limits_monitor.py my-org
     ./org_limits_monitor.py production --alert-threshold 80
 
+Requirements:
+    - Salesforce CLI (sf) v2.x+ installed
+    - Python 3.8+
+    - Authenticated Salesforce org via: sf org login web -a <org-alias>
+
+Safety: READ-ONLY
+    Reads org limits only. No data is modified.
+
 Features:
     - Monitors all org limits
     - Configurable alert thresholds

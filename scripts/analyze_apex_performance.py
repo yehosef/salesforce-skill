@@ -9,6 +9,23 @@ Usage:
     ./analyze_apex_performance.py ./debug-log.txt
     ./analyze_apex_performance.py ./logs/ApexLog-2025-10-20.log
 
+Requirements:
+    - Python 3.8+
+    - Salesforce debug log file (.log or .txt)
+    - Log generated from Developer Console with sufficient logging
+
+Safety: READ-ONLY (local file analysis)
+    Reads debug log file from local filesystem.
+    No network or org access required.
+
+How to get debug logs:
+    1. Open Developer Console (Ctrl+Shift+O in Salesforce)
+    2. Go to Debug → Change Log Levels
+    3. Set level to FINEST
+    4. Execute your code
+    5. Go to Debug → View Log
+    6. Download the log
+
 Features:
     - CPU time analysis by method
     - Heap usage tracking

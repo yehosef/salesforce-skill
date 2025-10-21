@@ -1,6 +1,25 @@
 #!/bin/bash
 # Find slow SOQL queries in Salesforce debug logs
 # Searches for queries that exceed a specified execution time threshold
+#
+# Requirements:
+#   - bash, grep, sed, sort commands available
+#   - Salesforce debug log files (.log or .txt)
+#   - mktemp command for temporary files
+#
+# Safety: READ-ONLY (local file analysis)
+#   This script only reads local debug log files.
+#   No network or org access required.
+#
+# Usage:
+#   ./find_slow_queries.sh ./logs 1000      # Find queries > 1 second
+#   ./find_slow_queries.sh ./debug 500      # Find queries > 500ms
+#
+# How to get debug logs:
+#   1. Developer Console → Debug → Change Log Levels
+#   2. Set Database = FINEST
+#   3. Run your code
+#   4. Debug → View Log → Download logs to a directory
 
 set -e
 

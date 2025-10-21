@@ -9,6 +9,16 @@ Usage:
     ./export_data.py "Account,Contact,Opportunity" my-org ./exports
     ./export_data.py "Custom_Parent__c,Custom_Child__c" dev-sandbox ./data
 
+Requirements:
+    - Salesforce CLI (sf) v2.x+ installed
+    - Python 3.8+
+    - Authenticated Salesforce org via: sf org login web -a <org-alias>
+    - Write permissions for output directory
+
+Safety: READ-ONLY (with file export)
+    Exports data from org. Creates CSV files and import plans locally.
+    No data in org is modified.
+
 Features:
     - Exports standard and custom objects
     - Preserves parent-child relationships

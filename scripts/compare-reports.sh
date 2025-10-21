@@ -1,6 +1,23 @@
 #!/bin/bash
 # Compare two report runs side-by-side
-# Usage: ./compare-reports.sh org-comparison 2025-10-21-1648 2025-10-24-0915
+#
+# Requirements:
+#   - bash, jq, diff commands available
+#   - Report runs exist in .claude/reports/<tool>/runs/
+#   - Two run IDs to compare
+#
+# Safety: READ-ONLY
+#   This script only reads and compares report files.
+#
+# Usage:
+#   ./compare-reports.sh org-comparison 2025-10-21-1648 2025-10-24-0915
+#   ./compare-reports.sh test-results run1 run2
+#
+# Output:
+#   - Metadata comparison (JSON diff)
+#   - Report text diff
+#   - Artifact file differences
+#   - Line count differences
 
 TOOL=${1:?Usage: compare-reports.sh <tool> <run1> <run2>}
 RUN1=${2:?}

@@ -1,6 +1,24 @@
 #!/bin/bash
-# Seed a scratch org with test data from another org or CSV files
-# Uses SFDMU (Salesforce Data Move Utility) if available
+# Seed a scratch org with test data from another org
+# Uses SFDMU (Salesforce Data Move Utility)
+#
+# Requirements:
+#   - Salesforce CLI (sf) v2.x+ installed
+#   - SFDMU plugin installed: sf plugins install sfdmu
+#   - Authenticated to both source and target orgs
+#   - npm installed (for alternative SFDMU install)
+#
+# Safety: ⚠️ DESTRUCTIVE - WRITES DATA
+#   This script WRITES DATA to the target org.
+#   Use only on scratch orgs or test environments.
+#
+# Usage:
+#   ./seed_scratch_org.sh dev-sandbox my-scratch
+#   ./seed_scratch_org.sh production my-scratch ./sfdmu-config
+#
+# Installation:
+#   sf plugins install sfdmu
+#   OR: npm install -g sfdmu
 
 set -e
 

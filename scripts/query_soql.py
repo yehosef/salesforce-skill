@@ -1,5 +1,27 @@
 #!/usr/bin/env python3
-"""Execute SOQL query and format results as markdown table."""
+"""
+Execute SOQL query and format results as markdown table.
+
+A read-only utility for executing SOQL queries against a Salesforce org
+and displaying results in a formatted markdown table.
+
+Usage:
+    ./query_soql.py "SELECT Id, Name FROM Account LIMIT 5" my-org
+    ./query_soql.py "SELECT Email FROM Contact WHERE Status = 'Active'" sandbox
+
+Requirements:
+    - Salesforce CLI (sf) v2.x+ installed
+    - Python 3.8+
+    - Authenticated Salesforce org via: sf org login web -a <org-alias>
+
+Safety: READ-ONLY
+    This script only executes SELECT queries. It does not modify any data.
+
+Dependencies:
+    - subprocess: Execute sf CLI commands
+    - json: Parse CLI JSON output
+    - typing: Type hints for better code clarity
+"""
 import sys
 import json
 import subprocess

@@ -10,6 +10,16 @@ Usage:
     ./find_duplicates.py Contact "Email" dev-sandbox
     ./find_duplicates.py Custom_Object__c "External_Id__c" production
 
+Requirements:
+    - Salesforce CLI (sf) v2.x+ installed
+    - Python 3.8+
+    - Authenticated Salesforce org via: sf org login web -a <org-alias>
+    - Write permissions for export directory
+
+Safety: READ-ONLY (with file export)
+    Reads duplicate records from org. Exports results to CSV files.
+    No data in org is modified.
+
 Features:
     - Supports single or multiple match fields
     - Groups duplicates for easy review

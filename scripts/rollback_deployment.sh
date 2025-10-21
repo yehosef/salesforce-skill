@@ -1,5 +1,24 @@
 #!/bin/bash
 # Rollback Salesforce deployment to previous snapshot
+#
+# Requirements:
+#   - Salesforce CLI (sf) v2.x+ installed
+#   - Authenticated Salesforce org via: sf org login web -a <org-alias>
+#   - Valid snapshot directory (created by snapshot_org.sh)
+#   - Write permissions for creating pre-rollback backup
+#
+# Safety: ⚠️ DESTRUCTIVE - DEPLOYS CODE
+#   This script DEPLOYS CODE to the target org.
+#   Requires explicit confirmation with "yes".
+#   Creates a pre-rollback backup before proceeding.
+#
+# Usage:
+#   ./rollback_deployment.sh production ./backups/prod-2025-10-19
+#   ./rollback_deployment.sh sandbox ./backups/sandbox-last-good
+#
+# ⚠️ WARNING:
+#   This will deploy the snapshot, potentially overwriting current metadata.
+#   A pre-rollback backup will be created for safety.
 
 set -e
 

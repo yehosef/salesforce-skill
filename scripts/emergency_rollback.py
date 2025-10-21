@@ -9,11 +9,29 @@ Usage:
     ./emergency_rollback.py Account ./backup-accounts.csv my-org
     ./emergency_rollback.py Contact ./backup-contacts.csv production
 
+Requirements:
+    - Salesforce CLI (sf) v2.x+ installed
+    - Python 3.8+
+    - Authenticated Salesforce org via: sf org login web -a <org-alias>
+    - CSV backup file with Id column and data to restore
+
+Safety: ⚠️ DESTRUCTIVE - WRITES DATA
+    This script MODIFIES DATA in the target org.
+    Always confirm before running.
+    Use only in emergency situations.
+
 Features:
     - Shows diff before applying changes
     - Validates backup data format
-    - Confirms before restoration
+    - Requires confirmation before restoration
     - Reports success/failure per record
+
+⚠️ WARNING:
+    This tool is destructive. It will:
+    1. Read from backup CSV
+    2. Upsert/import records to target org
+    3. Permanently modify org data
+    Always verify backup file and org before running.
 """
 
 import sys

@@ -1,5 +1,25 @@
 #!/bin/bash
 # Deploy metadata and run tests automatically with preview and validation
+#
+# Automated deployment workflow with test execution and preview.
+# Requires confirmation before deploying to prevent accidental changes.
+#
+# Requirements:
+#   - Salesforce CLI (sf) v2.x+ installed
+#   - Authenticated Salesforce org via: sf org login web -a <org-alias>
+#   - Valid metadata in <path> directory
+#   - Apex test classes in target org
+#
+# Safety: ⚠️ DESTRUCTIVE - DEPLOYS CODE
+#   This script DEPLOYS CODE to the target org.
+#   Requires user confirmation before proceeding.
+#
+# Usage:
+#   ./deploy_and_test.sh src/aura/MyComponent/ sandbox
+#   ./deploy_and_test.sh src/classes/ production --dry-run
+#
+# Options:
+#   --dry-run    Validate without deploying (preview only)
 
 set -e
 

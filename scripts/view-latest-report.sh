@@ -1,6 +1,21 @@
 #!/bin/bash
 # View the latest report for a tool
-# Usage: ./view-latest-report.sh org-comparison
+#
+# Requirements:
+#   - bash, readlink commands available
+#   - less or cat command (for viewing files)
+#   - Report exists in .claude/reports/<tool-name>/runs/latest/
+#
+# Safety: READ-ONLY
+#   This script only reads and displays report files.
+#
+# Usage:
+#   ./view-latest-report.sh org-comparison
+#   ./view-latest-report.sh test-results
+#   ./view-latest-report.sh code-coverage
+#
+# Output:
+#   Displays report.md from latest run using less or cat
 
 TOOL=${1:?Usage: view-latest-report.sh <tool-name>}
 

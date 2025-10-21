@@ -1,6 +1,24 @@
 #!/bin/bash
 # Compare Salesforce orgs and generate a stored report
-# Usage: compare_orgs_and_report.sh <source-org> <target-org> [metadata-types]
+#
+# Requirements:
+#   - Salesforce CLI (sf) v2.x+ installed
+#   - Authenticated to both source and target orgs
+#   - ~/.claude/lib/report-manager.sh available
+#   - jq installed (for JSON processing)
+#   - bash, grep, diff, sed, sort commands available
+#
+# Safety: READ-ONLY
+#   This script only reads and compares metadata.
+#   Saves reports to .claude/reports/ directory.
+#   No changes are made to either org.
+#
+# Usage:
+#   ./compare_orgs_and_report.sh sandbox production
+#   ./compare_orgs_and_report.sh dev uat "ApexClass,ApexTrigger"
+#
+# Output:
+#   Reports saved to: .claude/reports/org-comparison/runs/<timestamp>/
 
 set -e
 

@@ -1,5 +1,22 @@
 #!/bin/bash
 # Retrieve multiple metadata types from Salesforce org
+#
+# Requirements:
+#   - Salesforce CLI (sf) v2.x+ installed
+#   - Authenticated Salesforce org via: sf org login web -a <org-alias>
+#   - Valid SFDX project structure with src/ directory
+#
+# Safety: READ-ONLY
+#   This script only retrieves and downloads metadata.
+#   No changes are made to the org.
+#
+# Usage:
+#   ./retrieve_metadata.sh sandbox ApexClass ApexTrigger
+#   ./retrieve_metadata.sh production AuraDefinitionBundle LightningComponentBundle
+#
+# Common metadata types:
+#   ApexClass, ApexTrigger, AuraDefinitionBundle, LightningComponentBundle
+#   CustomObject, Flow, Layout, Profile, PermissionSet
 
 set -e
 

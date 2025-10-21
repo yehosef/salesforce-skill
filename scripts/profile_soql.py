@@ -9,6 +9,14 @@ Usage:
     ./profile_soql.py "SELECT Id, Name FROM Account" my-org
     ./profile_soql.py "SELECT Id FROM Contact WHERE Email = 'test@example.com'" dev-sandbox
 
+Requirements:
+    - Salesforce CLI (sf) v2.x+ installed
+    - Python 3.8+
+    - Authenticated Salesforce org via: sf org login web -a <org-alias>
+
+Safety: READ-ONLY
+    Executes SELECT queries only. No data is modified.
+
 Features:
     - Measures query execution time
     - Counts records returned

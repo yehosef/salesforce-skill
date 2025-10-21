@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
-"""Run Apex tests and format results."""
+"""
+Run Apex tests and format results.
+
+Executes Apex tests and displays results in a readable format with
+pass/fail summary and code coverage information.
+
+Usage:
+    ./run_tests.py CreateDonationLightningController_Test my-org
+    ./run_tests.py PaymentsBL_Test production
+
+Requirements:
+    - Salesforce CLI (sf) v2.x+ installed
+    - Python 3.8+
+    - Authenticated Salesforce org via: sf org login web -a <org-alias>
+    - Test class must exist in org
+
+Safety: READ-ONLY (executes tests)
+    Runs existing tests in the org. Does not modify any configuration.
+"""
 import sys
 import json
 import subprocess

@@ -1,7 +1,21 @@
 #!/bin/bash
 # List all reports and runs for a tool
-# Usage: ./list-reports.sh                    (all tools)
-#        ./list-reports.sh org-comparison    (specific tool)
+#
+# Requirements:
+#   - bash, jq, ls, sort commands available
+#   - Report directory exists in .claude/reports/
+#
+# Safety: READ-ONLY
+#   This script only reads and lists report metadata.
+#
+# Usage:
+#   ./list-reports.sh                  # List all tools
+#   ./list-reports.sh org-comparison   # List specific tool
+#   ./list-reports.sh test-results
+#
+# Output:
+#   Shows all runs with status (success/warning/error)
+#   Sorted by date (newest first)
 
 TOOL=${1:-}
 
