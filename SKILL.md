@@ -1,6 +1,6 @@
 ---
 name: salesforce-dev
-description: Comprehensive Salesforce development workflow automation for deployment, SOQL queries, Apex testing, and metadata management using the Salesforce CLI (sf command). Use when working with Salesforce projects including Aura/LWC components, Apex classes, SOQL queries, deployments, or test execution.
+description: Full-featured Salesforce development toolkit for deployment, testing, SOQL queries, org comparison, performance analysis, data migration, rollback, and health monitoring. Use for any Salesforce task including comparing environments, deploying components, running tests, finding duplicates, optimizing performance, error troubleshooting, or CI/CD integration.
 ---
 
 # Salesforce Development

@@ -32,9 +32,9 @@ jobs:
 
       - name: Authorize Sandbox Org
         run: |
-          echo "${{ secrets.SANDBOX_AUTH_URL }}" > auth_url.txt
+          (umask 077 && echo "${{ secrets.SANDBOX_AUTH_URL }}" > auth_url.txt)
           sf org login sfdx-url -f auth_url.txt -a sandbox
-          rm auth_url.txt
+          rm -f auth_url.txt
 
       - name: Check What Changed
         id: changed-files

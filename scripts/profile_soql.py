@@ -24,19 +24,18 @@ import time
 import re
 
 
-def run_command(cmd):
-    """Execute shell command and return output."""
+def run_command(cmd_list):
+    """Execute command and return output."""
     try:
         result = subprocess.run(
-            cmd,
-            shell=True,
+            cmd_list,
             capture_output=True,
             text=True,
             check=True
         )
         return result.stdout
     except subprocess.CalledProcessError as e:
-        print(f"Error executing command: {cmd}")
+        print(f"Error executing command: {' '.join(cmd_list)}")
         print(f"Error: {e.stderr}")
         sys.exit(1)
 
@@ -47,7 +46,7 @@ def execute_query_with_timing(query, org_alias):
 
     start_time = time.time()
 
-    cmd = f'sf data query -q "{query}" -o {org_alias} --json'
+    cmd = ['sf', 'data', 'query', '-q', query, '-o', org_alias, '--json']
     output = run_command(cmd)
 
     end_time = time.time()
@@ -133,7 +132,7 @@ def estimate_selectivity(query, org_alias, record_count):
 
     # Get total record count for object
     count_query = f"SELECT COUNT(Id) cnt FROM {sobject}"
-    cmd = f'sf data query -q "{count_query}" -o {org_alias} --json'
+    cmd = ['sf', 'data', 'query', '-q', count_query, '-o', org_alias, '--json']
 
     try:
         output = run_command(cmd)
@@ -147,7 +146,7 @@ def estimate_selectivity(query, org_alias, record_count):
                 'filtered_records': record_count,
                 'selectivity_pct': selectivity_pct
             }
-    except:
+    except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError, IndexError):
         pass
 
     return None
