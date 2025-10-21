@@ -22,12 +22,11 @@ import subprocess
 from datetime import datetime
 
 
-def run_command(cmd):
-    """Execute shell command and return output."""
+def run_command(cmd_list):
+    """Execute command and return output."""
     try:
         result = subprocess.run(
-            cmd,
-            shell=True,
+            cmd_list,
             capture_output=True,
             text=True,
             check=True
@@ -39,7 +38,7 @@ def run_command(cmd):
 
 def get_org_limits(org_alias):
     """Get all org limits and usage."""
-    cmd = f'sf org list limits -o {org_alias} --json'
+    cmd = ['sf', 'org', 'list', 'limits', '-o', org_alias, '--json']
     output = run_command(cmd)
 
     if not output:

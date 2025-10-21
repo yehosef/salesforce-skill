@@ -25,12 +25,11 @@ import subprocess
 from datetime import datetime
 
 
-def run_command(cmd):
-    """Execute shell command and return output."""
+def run_command(cmd_list):
+    """Execute command and return output."""
     try:
         result = subprocess.run(
-            cmd,
-            shell=True,
+            cmd_list,
             capture_output=True,
             text=True,
             check=True
@@ -44,7 +43,7 @@ def get_org_limits(org_alias):
     """Get org limits and usage."""
     print("  Fetching org limits...")
 
-    cmd = f'sf org list limits -o {org_alias} --json'
+    cmd = ['sf', 'org', 'list', 'limits', '-o', org_alias, '--json']
     output = run_command(cmd)
 
     if not output:
@@ -61,7 +60,7 @@ def get_apex_test_results(org_alias):
     """Get recent Apex test results."""
     print("  Checking Apex test coverage...")
 
-    cmd = f'sf apex get test -o {org_alias} --code-coverage --json 2>/dev/null'
+    cmd = ['sf', 'apex', 'get', 'test', '-o', org_alias, '--code-coverage', '--json']
     output = run_command(cmd)
 
     if not output:
@@ -81,7 +80,7 @@ def get_metadata_counts(org_alias):
     counts = {}
 
     # Count Apex classes
-    cmd = f'sf data query -q "SELECT COUNT(Id) cnt FROM ApexClass" -o {org_alias} --json 2>/dev/null'
+    cmd = ['sf', 'data', 'query', '-q', 'SELECT COUNT(Id) cnt FROM ApexClass', '-o', org_alias, '--json']
     output = run_command(cmd)
     if output:
         try:
@@ -91,7 +90,7 @@ def get_metadata_counts(org_alias):
             counts['ApexClass'] = 0
 
     # Count Apex triggers
-    cmd = f'sf data query -q "SELECT COUNT(Id) cnt FROM ApexTrigger WHERE Status = \'Active\'" -o {org_alias} --json 2>/dev/null'
+    cmd = ['sf', 'data', 'query', '-q', "SELECT COUNT(Id) cnt FROM ApexTrigger WHERE Status = 'Active'", '-o', org_alias, '--json']
     output = run_command(cmd)
     if output:
         try:
@@ -101,7 +100,7 @@ def get_metadata_counts(org_alias):
             counts['ApexTrigger'] = 0
 
     # Count custom objects
-    cmd = f'sf sobject list -o {org_alias} --json 2>/dev/null'
+    cmd = ['sf', 'sobject', 'list', '-o', org_alias, '--json']
     output = run_command(cmd)
     if output:
         try:

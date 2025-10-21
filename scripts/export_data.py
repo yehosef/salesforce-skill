@@ -25,19 +25,18 @@ from datetime import datetime
 from pathlib import Path
 
 
-def run_command(cmd):
-    """Execute shell command and return output."""
+def run_command(cmd_list):
+    """Execute command and return output."""
     try:
         result = subprocess.run(
-            cmd,
-            shell=True,
+            cmd_list,
             capture_output=True,
             text=True,
             check=True
         )
         return result.stdout
     except subprocess.CalledProcessError as e:
-        print(f"Error executing command: {cmd}")
+        print(f"Error executing command: {' '.join(cmd_list)}")
         print(f"Error: {e.stderr}")
         sys.exit(1)
 
@@ -46,7 +45,7 @@ def get_object_fields(sobject, org_alias):
     """Get all fields for a Salesforce object."""
     print(f"  Fetching fields for {sobject}...")
 
-    cmd = f'sf sobject describe -s {sobject} -o {org_alias} --json'
+    cmd = ['sf', 'sobject', 'describe', '-s', sobject, '-o', org_alias, '--json']
     output = run_command(cmd)
 
     try:
@@ -76,7 +75,7 @@ def get_relationship_fields(sobject, org_alias):
     """Get lookup/master-detail fields for relationship preservation."""
     print(f"  Identifying relationship fields for {sobject}...")
 
-    cmd = f'sf sobject describe -s {sobject} -o {org_alias} --json'
+    cmd = ['sf', 'sobject', 'describe', '-s', sobject, '-o', org_alias, '--json']
     output = run_command(cmd)
 
     try:
@@ -146,7 +145,7 @@ def export_object(sobject, org_alias, output_dir):
 
     # Check record count first
     count_query = f"SELECT COUNT(Id) cnt FROM {sobject}"
-    count_cmd = f'sf data query -q "{count_query}" -o {org_alias} --json'
+    count_cmd = ['sf', 'data', 'query', '-q', count_query, '-o', org_alias, '--json']
     count_output = run_command(count_cmd)
 
     try:
@@ -168,14 +167,14 @@ def export_object(sobject, org_alias, output_dir):
     if record_count > 10000:
         # Use bulk export for large datasets
         print(f"  Using bulk export (large dataset)...")
-        cmd = f'sf data export bulk -q "{query}" -o {org_alias} --output-dir {output_dir}'
+        cmd = ['sf', 'data', 'export', 'bulk', '-q', query, '-o', org_alias, '--output-dir', output_dir]
         run_command(cmd)
         # Bulk export creates a file with timestamp; rename it
         # (This is simplified; actual bulk export file handling may vary)
     else:
         # Use standard query for smaller datasets
         print(f"  Using standard export...")
-        cmd = f'sf data query -q "{query}" -o {org_alias} --json'
+        cmd = ['sf', 'data', 'query', '-q', query, '-o', org_alias, '--json']
         output = run_command(cmd)
 
         try:

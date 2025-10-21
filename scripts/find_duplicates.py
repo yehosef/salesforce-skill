@@ -25,19 +25,18 @@ from datetime import datetime
 from collections import defaultdict
 
 
-def run_command(cmd):
-    """Execute shell command and return output."""
+def run_command(cmd_list):
+    """Execute command and return output."""
     try:
         result = subprocess.run(
-            cmd,
-            shell=True,
+            cmd_list,
             capture_output=True,
             text=True,
             check=True
         )
         return result.stdout
     except subprocess.CalledProcessError as e:
-        print(f"Error executing command: {cmd}")
+        print(f"Error executing command: {' '.join(cmd_list)}")
         print(f"Error: {e.stderr}")
         sys.exit(1)
 
@@ -65,7 +64,7 @@ def find_duplicate_field_values(sobject, fields, org_alias):
 
     print(f"\n📋 Query: {query_oneline}\n")
 
-    cmd = f'sf data query -q "{query_oneline}" -o {org_alias} --json'
+    cmd = ['sf', 'data', 'query', '-q', query_oneline, '-o', org_alias, '--json']
     output = run_command(cmd)
 
     try:
@@ -116,7 +115,7 @@ def get_duplicate_records(sobject, fields, field_values, org_alias):
 
         query_oneline = ' '.join(query.split())
 
-        cmd = f'sf data query -q "{query_oneline}" -o {org_alias} --json'
+        cmd = ['sf', 'data', 'query', '-q', query_oneline, '-o', org_alias, '--json']
         output = run_command(cmd)
 
         try:

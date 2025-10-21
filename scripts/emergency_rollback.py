@@ -23,12 +23,11 @@ import csv
 from datetime import datetime
 
 
-def run_command(cmd):
-    """Execute shell command and return output."""
+def run_command(cmd_list):
+    """Execute command and return output."""
     try:
         result = subprocess.run(
-            cmd,
-            shell=True,
+            cmd_list,
             capture_output=True,
             text=True,
             check=True
@@ -66,7 +65,7 @@ def get_current_records(sobject, record_ids, org_alias):
     ids_str = "'" + "','".join(record_ids) + "'"
     query = f"SELECT Id FROM {sobject} WHERE Id IN ({ids_str})"
 
-    cmd = f'sf data query -q "{query}" -o {org_alias} --json'
+    cmd = ['sf', 'data', 'query', '-q', query, '-o', org_alias, '--json']
     output = run_command(cmd)
 
     if not output:
@@ -107,7 +106,7 @@ def restore_data(sobject, csv_file, org_alias):
     print(f"\n💾 Restoring data to {org_alias}...")
 
     # Use upsert to handle both inserts and updates
-    cmd = f'sf data import tree --sobject {sobject} --file {csv_file} --target-org {org_alias} --json'
+    cmd = ['sf', 'data', 'import', 'tree', '--sobject', sobject, '--file', csv_file, '--target-org', org_alias, '--json']
     output = run_command(cmd)
 
     if not output:
@@ -125,7 +124,7 @@ def restore_data(sobject, csv_file, org_alias):
     except json.JSONDecodeError:
         # Try alternate method with bulk API
         print("Trying bulk restore...")
-        cmd = f'sf data import bulk --sobject {sobject} --file {csv_file} -o {org_alias}'
+        cmd = ['sf', 'data', 'import', 'bulk', '--sobject', sobject, '--file', csv_file, '-o', org_alias]
         result = run_command(cmd)
         return result is not None
 
