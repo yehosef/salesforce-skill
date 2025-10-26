@@ -1,0 +1,106 @@
+# PyLint configuration for Salesforce Skill
+#
+# This file configures pylint for Python scripts in the project.
+# See: https://pylint.pycqa.org/en/latest/user_guide/configuration/index.html
+
+[MASTER]
+# Python code to execute, usually for sys.path manipulation
+init-hook='import sys; sys.path.append("scripts")'
+
+# Use multiple processes to speed up Pylint
+jobs=0
+
+# Pickle collected data for later comparisons
+persistent=yes
+
+# Allow loading of arbitrary C extensions
+unsafe-load-any-extension=no
+
+# Ignore specific paths
+ignore=tests,venv,.venv,build,dist
+
+[MESSAGES CONTROL]
+# Disable specific warnings that are too strict
+disable=
+    # Style/format (handled by black)
+    C0111,  # missing-docstring
+    C0103,  # invalid-name (allow short vars)
+    C0301,  # line-too-long (handled by black)
+    # Design
+    R0913,  # too-many-arguments
+    R0914,  # too-many-locals
+    R0912,  # too-many-branches
+    R0915,  # too-many-statements
+    # Imports
+    W0611,  # unused-import (sometimes needed for type hints)
+    # Others
+    W0212,  # protected-access (sometimes needed for testing)
+    W0511,  # fixme (we want TODOs in code)
+
+[REPORTS]
+# Set the output format
+output-format=colorized
+
+# Include message's id in output
+include-ids=yes
+
+# Activate the evaluation score
+score=yes
+
+[BASIC]
+# Naming conventions
+argument-naming-style=snake_case
+attr-naming-style=snake_case
+class-naming-style=PascalCase
+const-naming-style=UPPER_CASE
+function-naming-style=snake_case
+method-naming-style=snake_case
+module-naming-style=snake_case
+variable-naming-style=snake_case
+
+# Good variable names
+good-names=i,j,k,ex,Run,_,id,sf,org
+
+# Regular expression for acceptable variable names
+# Allow 1-30 character names
+variable-rgx=[a-z_][a-z0-9_]{0,30}$
+
+[FORMAT]
+# Maximum number of characters on a single line
+max-line-length=100
+
+# Maximum number of lines in a module
+max-module-lines=1000
+
+# String used for indentation
+indent-string='    '
+
+# Expected format of line ending
+expected-line-ending-format=LF
+
+[DESIGN]
+# Maximum number of arguments for function / method
+max-args=7
+
+# Maximum number of locals for function / method body
+max-locals=20
+
+# Maximum number of return / yield for function / method body
+max-returns=6
+
+# Maximum number of branch for function / method body
+max-branches=15
+
+# Maximum number of statements in function / method body
+max-statements=50
+
+# Maximum number of attributes for a class
+max-attributes=10
+
+[IMPORTS]
+# Deprecated modules which should not be used
+deprecated-modules=optparse
+
+[EXCEPTIONS]
+# Exceptions that will emit a warning when caught
+overgeneral-exceptions=builtins.BaseException,builtins.Exception

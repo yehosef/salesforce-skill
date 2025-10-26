@@ -1,0 +1,139 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run All Tests",
+      "type": "shell",
+      "command": "./tests/run-all-tests.sh",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Python Tests",
+      "type": "shell",
+      "command": "pytest tests/unit/ -v",
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint Python Scripts",
+      "type": "shell",
+      "command": "pylint scripts/*.py",
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint Shell Scripts",
+      "type": "shell",
+      "command": "shellcheck scripts/*.sh",
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Format Python Code",
+      "type": "shell",
+      "command": "black scripts/*.py tests/",
+      "group": "none",
+      "presentation": {
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Verify Installation",
+      "type": "shell",
+      "command": "./verify-install.sh",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Query SOQL",
+      "type": "shell",
+      "command": "./scripts/query_soql.py",
+      "args": [
+        "${input:soqlQuery}",
+        "${input:orgAlias}"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Compare Orgs",
+      "type": "shell",
+      "command": "./scripts/compare_orgs.sh",
+      "args": [
+        "${input:sourceOrg}",
+        "${input:targetOrg}"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Org Health Check",
+      "type": "shell",
+      "command": "./scripts/org_health_check.py",
+      "args": [
+        "${input:orgAlias}"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "soqlQuery",
+      "type": "promptString",
+      "description": "Enter SOQL query",
+      "default": "SELECT Id, Name FROM Account LIMIT 10"
+    },
+    {
+      "id": "orgAlias",
+      "type": "promptString",
+      "description": "Enter org alias",
+      "default": "my-org"
+    },
+    {
+      "id": "sourceOrg",
+      "type": "promptString",
+      "description": "Enter source org alias",
+      "default": "sandbox"
+    },
+    {
+      "id": "targetOrg",
+      "type": "promptString",
+      "description": "Enter target org alias",
+      "default": "production"
+    }
+  ]
+}

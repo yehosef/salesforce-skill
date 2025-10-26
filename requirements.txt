@@ -1,0 +1,10 @@
+# Production Dependencies
+# Currently, all scripts use only Python standard library
+# This file is maintained for future dependencies
+
+# Development Dependencies (optional, for contributors)
+# Install with: pip install -r requirements-dev.txt
+
+# Note: The following are NOT required for basic usage:
+# - Salesforce CLI (sf) is required and installed via npm
+# - Python 3.8+ is required (standard library only)

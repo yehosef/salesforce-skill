@@ -1,0 +1,27 @@
+# ShellCheck configuration for Salesforce Skill scripts
+#
+# This file configures shellcheck for the project.
+# See: https://github.com/koalaman/shellcheck/wiki/Directive
+
+# Disable specific checks that are too strict for our use case
+
+# SC1090: Can't follow non-constant source
+disable=SC1090
+
+# SC1091: Not following sourced file
+disable=SC1091
+
+# SC2034: Variable appears unused (we use many variables for clarity)
+# disable=SC2034
+
+# SC2154: Variable referenced but not assigned (often from sourced files)
+disable=SC2154
+
+# SC2155: Declare and assign separately to avoid masking return values
+# This is a style choice - we prefer combined declarations for readability
+disable=SC2155
+
+# Enable additional optional checks
+enable=avoid-nullary-conditions
+enable=quote-safe-variables
+enable=require-variable-braces

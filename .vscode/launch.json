@@ -1,0 +1,58 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Python: Query SOQL",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/query_soql.py",
+      "args": [
+        "SELECT Id, Name FROM Account LIMIT 5",
+        "my-org"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Org Health Check",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/org_health_check.py",
+      "args": [
+        "my-org"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Find Duplicates",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/find_duplicates.py",
+      "args": [
+        "Contact",
+        "Email",
+        "my-org"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Run Tests",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/.venv/bin/pytest",
+      "args": [
+        "tests/",
+        "-v"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

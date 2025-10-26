@@ -1,0 +1,17 @@
+-- Basic Account Query
+-- Retrieves account information with industry and revenue
+
+SELECT
+    Id,
+    Name,
+    Industry,
+    AnnualRevenue,
+    BillingCity,
+    BillingState,
+    BillingCountry,
+    CreatedDate,
+    LastModifiedDate
+FROM Account
+WHERE IsDeleted = false
+ORDER BY Name
+LIMIT 100

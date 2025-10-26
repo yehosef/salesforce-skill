@@ -1,0 +1,43 @@
+{
+  "name": "salesforce-skill",
+  "version": "2.1.0",
+  "description": "Comprehensive Salesforce development toolkit for Claude Code",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/salesforce-skill.git"
+  },
+  "keywords": [
+    "salesforce",
+    "sfdx",
+    "sf-cli",
+    "claude-code",
+    "automation",
+    "deployment",
+    "soql",
+    "apex"
+  ],
+  "author": "Salesforce Skill Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "@salesforce/cli": "^2.0.0"
+  },
+  "optionalDependencies": {
+    "sfdmu": "^4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "scripts": {
+    "install": "echo 'Installing Salesforce CLI...' && npm install -g @salesforce/cli",
+    "install-sfdmu": "sf plugins install sfdmu",
+    "verify": "bash verify-install.sh",
+    "test": "bash tests/run-all-tests.sh",
+    "lint": "shellcheck scripts/*.sh",
+    "format": "prettier --write '**/*.{json,md,yml,yaml}'"
+  }
+}
