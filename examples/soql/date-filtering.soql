@@ -1,0 +1,25 @@
+-- Date Filtering Examples
+-- Various date literals and filtering patterns
+
+SELECT
+    Id,
+    Name,
+    CreatedDate,
+    LastModifiedDate,
+    LastActivityDate
+FROM Account
+WHERE (
+    -- Records created in the last 30 days
+    CreatedDate = LAST_N_DAYS:30
+    OR
+    -- Records modified today
+    LastModifiedDate = TODAY
+    OR
+    -- Records with activity this month
+    LastActivityDate = THIS_MONTH
+    OR
+    -- Records from specific date range
+    (CreatedDate >= 2025-01-01 AND CreatedDate <= 2025-12-31)
+)
+ORDER BY CreatedDate DESC
+LIMIT 100

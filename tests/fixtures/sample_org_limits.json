@@ -1,0 +1,20 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "name": "DailyApiRequests",
+      "max": 15000,
+      "remaining": 14850
+    },
+    {
+      "name": "DataStorageMB",
+      "max": 5120,
+      "remaining": 4096
+    },
+    {
+      "name": "FileStorageMB",
+      "max": 1024,
+      "remaining": 512
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+# Salesforce Skill Configuration
+#
+# Copy this file to ~/.config/salesforce-skill/config.yaml
+# or to config.yaml in the skill directory for project-specific settings.
+#
+# All settings are optional. If not specified, sensible defaults are used.
+
+# Default org to use when no org is specified
+default_org: my-org
+
+# Default metadata types to retrieve when comparing orgs
+default_metadata_types:
+  - ApexClass
+  - ApexTrigger
+  - ApexPage
+  - ApexComponent
+  - AuraDefinitionBundle
+  - LightningComponentBundle
+  - CustomObject
+  - CustomField
+  - ValidationRule
+  - WorkflowRule
+  - Flow
+  - PermissionSet
+  - Profile
+
+# Deployment settings
+deployment:
+  # Default test level for deployments
+  test_level: RunLocalTests
+
+  # Wait time for deployment (in minutes)
+  wait_time: 33
+
+  # Whether to validate before deploying
+  validate_first: true
+
+  # Whether to create snapshots before production deployments
+  snapshot_production: true
+
+# SOQL query settings
+soql:
+  # Maximum records to display in table output
+  max_table_rows: 1000
+
+  # Maximum length for string truncation in tables
+  max_string_length: 50
+
+  # Default query timeout (in seconds)
+  timeout: 30
+
+# Testing settings
+testing:
+  # Minimum code coverage percentage for warnings
+  min_coverage_warning: 75
+
+  # Minimum code coverage percentage for errors
+  min_coverage_error: 60
+
+  # Whether to show detailed test output
+  verbose: false
+
+# Report management
+reports:
+  # Directory for storing reports (relative to home or absolute path)
+  base_dir: ~/.claude/reports
+
+  # Number of days to retain old reports (0 = keep forever)
+  retention_days: 90
+
+  # Whether to create timestamped subdirectories
+  use_timestamps: true
+
+# Org comparison settings
+comparison:
+  # Whether to show detailed diffs by default
+  show_diffs: true
+
+  # Maximum number of diffs to show per metadata type
+  max_diffs: 10
+
+  # Whether to save comparison reports automatically
+  save_reports: true
+
+# Performance profiling
+profiling:
+  # Slow query threshold in milliseconds
+  slow_query_threshold: 1000
+
+  # Whether to show optimization recommendations
+  show_recommendations: true
+
+  # Maximum number of recommendations to show
+  max_recommendations: 5
+
+# Data export settings
+data_export:
+  # Default export format
+  format: csv
+
+  # Whether to include relationship data
+  include_relationships: true
+
+  # Batch size for bulk exports
+  batch_size: 200
+
+# Duplicate detection
+duplicates:
+  # Minimum similarity score for fuzzy matching (0.0 - 1.0)
+  similarity_threshold: 0.85
+
+  # Whether to export duplicates to CSV automatically
+  auto_export: true
+
+  # Maximum number of duplicate groups to show
+  max_groups: 50
+
+# Health check settings
+health_check:
+  # Alert threshold for API usage (percentage)
+  api_alert_threshold: 80
+
+  # Alert threshold for storage usage (percentage)
+  storage_alert_threshold: 85
+
+  # Whether to show detailed health metrics
+  detailed: false
+
+# Rollback settings
+rollback:
+  # Directory for storing snapshots
+  snapshot_dir: ./backups
+
+  # Whether to create pre-rollback snapshots
+  pre_rollback_snapshot: true
+
+  # Whether to run tests after rollback
+  test_after_rollback: true
+
+# Output formatting
+output:
+  # Enable colored output
+  colors: true
+
+  # Verbosity level (0=quiet, 1=normal, 2=verbose, 3=debug)
+  verbosity: 1
+
+  # Date format for timestamps
+  date_format: "%Y-%m-%d %H:%M:%S"
+
+  # Whether to show progress indicators
+  show_progress: true
+
+# Logging
+logging:
+  # Log level (DEBUG, INFO, WARNING, ERROR)
+  level: INFO
+
+  # Log file path (null = no file logging)
+  file: null
+
+  # Whether to include timestamps in logs
+  timestamps: true
+
+# Advanced settings
+advanced:
+  # Number of retry attempts for failed operations
+  retry_attempts: 3
+
+  # Delay between retries (in seconds)
+  retry_delay: 2
+
+  # Whether to use exponential backoff for retries
+  exponential_backoff: true
+
+  # Timeout for sf CLI commands (in seconds)
+  cli_timeout: 120
+
+  # Whether to cache sf CLI results
+  cache_results: false
+
+  # Cache expiration time (in seconds)
+  cache_expiration: 300
+
+# Environment-specific overrides
+# These override default settings when working with specific org types
+environments:
+  production:
+    deployment:
+      validate_first: true
+      snapshot_production: true
+      test_level: RunLocalTests
+    health_check:
+      api_alert_threshold: 75
+      storage_alert_threshold: 80
+
+  sandbox:
+    deployment:
+      validate_first: false
+      test_level: NoTestRun
+    testing:
+      min_coverage_warning: 60
+
+  scratch:
+    deployment:
+      validate_first: false
+      test_level: NoTestRun
+    reports:
+      retention_days: 7
+
+# Custom scripts and hooks
+hooks:
+  # Script to run before deployment
+  pre_deploy: null
+
+  # Script to run after deployment
+  post_deploy: null
+
+  # Script to run before snapshot
+  pre_snapshot: null
+
+  # Script to run after snapshot
+  post_snapshot: null
+
+  # Script to run on errors
+  on_error: null
+
+# Notification settings (future enhancement)
+notifications:
+  # Enable notifications
+  enabled: false
+
+  # Notification channels (email, slack, webhook)
+  channels: []
+
+  # Events to notify about
+  events:
+    - deployment_success
+    - deployment_failure
+    - health_check_alert

@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    // Salesforce
+    "salesforce.salesforcedx-vscode",
+    "salesforce.salesforcedx-vscode-apex",
+    "salesforce.salesforcedx-vscode-apex-debugger",
+    "salesforce.salesforcedx-vscode-apex-replay-debugger",
+    "salesforce.salesforcedx-vscode-core",
+    "salesforce.salesforcedx-vscode-lightning",
+
+    // Python
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.black-formatter",
+
+    // Shell
+    "timonwong.shellcheck",
+    "foxundermoon.shell-format",
+
+    // General
+    "editorconfig.editorconfig",
+    "streetsidesoftware.code-spell-checker",
+    "yzhang.markdown-all-in-one"
+  ]
+}

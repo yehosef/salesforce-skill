@@ -1,0 +1,72 @@
+{
+  "Query SOQL": {
+    "prefix": "sf-query",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/query_soql.py \"${1:SELECT Id, Name FROM Account LIMIT 10}\" ${2:my-org}"
+    ],
+    "description": "Execute SOQL query"
+  },
+  "Deploy and Test": {
+    "prefix": "sf-deploy",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/deploy_and_test.sh ${1:src/classes/} ${2:my-org}"
+    ],
+    "description": "Deploy metadata with tests"
+  },
+  "Compare Orgs": {
+    "prefix": "sf-compare",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/compare_orgs.sh ${1:sandbox} ${2:production}"
+    ],
+    "description": "Compare two Salesforce orgs"
+  },
+  "Org Health Check": {
+    "prefix": "sf-health",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/org_health_check.py ${1:my-org}"
+    ],
+    "description": "Run org health check"
+  },
+  "Find Duplicates": {
+    "prefix": "sf-duplicates",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/find_duplicates.py ${1:Contact} \"${2:Email}\" ${3:my-org}"
+    ],
+    "description": "Find duplicate records"
+  },
+  "Snapshot Org": {
+    "prefix": "sf-snapshot",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/snapshot_org.sh ${1:my-org} ${2:./backups/snapshot-$(date +%Y-%m-%d)}"
+    ],
+    "description": "Create org metadata snapshot"
+  },
+  "Rollback Deployment": {
+    "prefix": "sf-rollback",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/rollback_deployment.sh ${1:my-org} ${2:./backups/snapshot-path}"
+    ],
+    "description": "Rollback to previous snapshot"
+  },
+  "Run Tests": {
+    "prefix": "sf-test",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/run_tests.py ${1:TestClassName} ${2:my-org}"
+    ],
+    "description": "Run Apex tests"
+  },
+  "Profile SOQL": {
+    "prefix": "sf-profile",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/profile_soql.py \"${1:SELECT Id FROM Account}\" ${2:my-org}"
+    ],
+    "description": "Profile SOQL query performance"
+  },
+  "Export Data": {
+    "prefix": "sf-export",
+    "body": [
+      "~/.claude/skills/salesforce-dev/scripts/export_data.py \"${1:Account,Contact}\" ${2:my-org} ${3:./exports}"
+    ],
+    "description": "Export data with relationships"
+  }
+}

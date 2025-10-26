@@ -1,0 +1,18 @@
+-- Aggregate Query Example
+-- Count opportunities and sum amounts by account
+
+SELECT
+    AccountId,
+    Account.Name,
+    COUNT(Id) TotalOpportunities,
+    SUM(Amount) TotalAmount,
+    AVG(Amount) AverageAmount,
+    MIN(CloseDate) EarliestClose,
+    MAX(CloseDate) LatestClose
+FROM Opportunity
+WHERE Amount > 0
+AND CloseDate >= LAST_N_MONTHS:6
+GROUP BY AccountId, Account.Name
+HAVING COUNT(Id) > 5
+ORDER BY TotalAmount DESC
+LIMIT 25

@@ -1,0 +1,93 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "salesforce-skill"
+version = "2.1.0"
+description = "Comprehensive Salesforce development toolkit for Claude Code"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Salesforce Skill Contributors"}
+]
+requires-python = ">=3.8"
+keywords = ["salesforce", "sfdx", "sf-cli", "claude-code", "automation"]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/salesforce-skill"
+Documentation = "https://github.com/yourusername/salesforce-skill/blob/main/README.md"
+Repository = "https://github.com/yourusername/salesforce-skill.git"
+Issues = "https://github.com/yourusername/salesforce-skill/issues"
+Changelog = "https://github.com/yourusername/salesforce-skill/blob/main/CHANGELOG.md"
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.pylint.main]
+py-version = "3.8"
+ignore = ["tests", ".venv", "venv"]
+jobs = 0  # Use all CPUs
+
+[tool.pylint.messages_control]
+disable = [
+    "C0111",  # missing-docstring (we have our own style)
+    "C0103",  # invalid-name (allow short variable names)
+    "R0913",  # too-many-arguments
+    "R0914",  # too-many-locals
+]
+
+[tool.pylint.format]
+max-line-length = 100
+indent-string = "    "
+
+[tool.pylint.design]
+max-args = 7
+max-locals = 20
+max-branches = 15
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --cov=scripts --cov-report=html --cov-report=term"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["scripts"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/.venv/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+
+[tool.coverage.html]
+directory = "htmlcov"

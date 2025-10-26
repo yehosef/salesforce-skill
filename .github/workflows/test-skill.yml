@@ -1,0 +1,233 @@
+name: Test Salesforce Skill
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint-shell:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run shellcheck
+        run: |
+          echo "Checking shell scripts..."
+          find scripts lib -name "*.sh" -type f | while read -r script; do
+            echo "Checking: $script"
+            shellcheck "$script" || exit 1
+          done
+
+  lint-python:
+    name: Lint Python Scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint flake8 black mypy
+
+      - name: Run black (check only)
+        run: black --check --line-length 100 scripts/*.py tests/
+
+      - name: Run flake8
+        run: flake8 scripts/*.py tests/ --max-line-length=100 --extend-ignore=E203,W503
+
+      - name: Run pylint
+        run: pylint scripts/*.py || true  # Don't fail on warnings
+
+  test-python:
+    name: Python Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+
+      - name: Run unit tests
+        run: |
+          python -m pytest tests/unit/ -v --cov=scripts --cov-report=term
+
+  test-integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Verify sf installation
+        run: sf --version
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.py scripts/*.sh lib/*.sh tests/integration/*.sh
+
+      - name: Run integration tests
+        run: bash tests/integration/test_scripts_executable.sh
+
+  test-installation:
+    name: Test Installation
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Make install scripts executable
+        run: chmod +x install.sh verify-install.sh uninstall.sh
+
+      - name: Run verification script
+        run: ./verify-install.sh --verbose
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install detect-secrets
+        run: pip install detect-secrets
+
+      - name: Run detect-secrets
+        run: |
+          detect-secrets scan --baseline .secrets.baseline
+          detect-secrets audit .secrets.baseline
+
+  markdown-lint:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint markdown files
+        uses: articulate/actions-markdownlint@v1
+        with:
+          config: .markdownlint.json
+          files: '**/*.md'
+          ignore: node_modules
+        continue-on-error: true  # Don't fail on markdown issues
+
+  validate-yaml:
+    name: Validate YAML Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Lint YAML files
+        run: |
+          yamllint -d "{extends: default, rules: {line-length: {max: 120}, document-start: disable}}" \
+            .github/workflows/*.yml \
+            .pre-commit-config.yaml \
+            config.example.yaml \
+            assets/*.yml
+
+  documentation-check:
+    name: Check Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required documentation files
+        run: |
+          required_files=(
+            "README.md"
+            "SKILL.md"
+            "LICENSE"
+            "CHANGELOG.md"
+            "CONTRIBUTING.md"
+            "FAQ.md"
+            "TROUBLESHOOTING.md"
+            "ARCHITECTURE.md"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing required file: $file"
+              exit 1
+            else
+              echo "✅ Found: $file"
+            fi
+          done
+
+      - name: Check scripts documentation
+        run: |
+          if [ ! -f "scripts/README.md" ]; then
+            echo "❌ Missing scripts/README.md"
+            exit 1
+          fi
+          echo "✅ Found: scripts/README.md"
+
+  all-checks-pass:
+    name: All Checks Passed
+    needs:
+      - lint-shell
+      - lint-python
+      - test-python
+      - test-integration
+      - test-installation
+      - security-scan
+      - validate-yaml
+      - documentation-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Success
+        run: |
+          echo "✅ All checks passed!"
+          echo "The skill is ready for use."

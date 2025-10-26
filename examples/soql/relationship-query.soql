@@ -1,0 +1,25 @@
+-- Relationship Query Example
+-- Gets Accounts with related Contacts and Opportunities
+
+SELECT
+    Id,
+    Name,
+    Industry,
+    AnnualRevenue,
+    (SELECT Id, FirstName, LastName, Email, Title
+     FROM Contacts
+     WHERE Email != null
+     ORDER BY LastName),
+    (SELECT Id, Name, Amount, StageName, CloseDate
+     FROM Opportunities
+     WHERE IsClosed = false
+     ORDER BY CloseDate)
+FROM Account
+WHERE Id IN (
+    SELECT AccountId
+    FROM Opportunity
+    WHERE Amount > 10000
+    AND StageName = 'Prospecting'
+)
+ORDER BY Name
+LIMIT 50
