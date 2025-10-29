@@ -134,6 +134,94 @@ sf project deploy start -m "PermissionSet:MyPermSet" -o <alias>
 
 ---
 
+### FIELD_NOT_WRITEABLE
+**Error Message**: "Field is not writeable: ObjectName.fieldName"
+
+**Cause**: Your code attempts to update a field that Salesforce doesn't allow to be written to. Common causes:
+- **Formula fields** - Calculated values, not stored (read-only by design)
+- **Roll-up summary fields** - Aggregated values, not directly updatable
+- **External fields** - Integration fields, not directly updatable
+- **System fields** - CreatedDate, LastModifiedDate, CreatedById, etc.
+- **Read-only custom fields** - Field-level security or field definition settings
+- **Lookup fields on certain objects** - Some objects don't allow direct lookup updates
+
+**Solutions**:
+
+```apex
+// Solution 1: Update parent/lookup records instead
+Account parent = [SELECT Id FROM Account WHERE Name = 'Parent'];
+
+// DON'T do this:
+Contact c = new Contact(AccountId = '001...');  // If Account lookup is read-only
+c.Account__c = parent.Id;  // ✗ NOT WRITEABLE
+update c;
+
+// DO this instead:
+Contact c = new Contact(AccountId = parent.Id);  // Use standard relationship
+update c;
+
+// Solution 2: Check if field is writeable before updating
+Map<String, SObjectField> fields = Account.getSObjectType().getDescribe().fields.getMap();
+SObjectField field = fields.get('CustomField__c');
+if (field.getDescribe().isUpdateable()) {
+    // Safe to update
+    acc.CustomField__c = value;
+    update acc;
+}
+
+// Solution 3: Use alternative fields
+// If Quote.Group_Name__c is not writeable, use different field
+Quote q = [SELECT Id, Name FROM Quote WHERE Id = :quoteId];
+// Update OpportunityId instead, which is updateable
+q.OpportunityId = newOppId;
+update q;
+```
+
+**Prevention**:
+
+```bash
+# 1. Validate field writeability before deployment
+./scripts/validate_field_writeability.py src/ your-org
+
+# 2. Check field metadata in Salesforce CLI
+sf sobject describe -s Quote -o your-org | grep "Group_Name"
+
+# 3. Review field definition in Setup
+# Setup → Object Manager → ObjectName → Fields → FieldName → Check "Writeable"
+
+# 4. Use isUpdateable() in tests
+Apex:
+Boolean canUpdate = Schema.Quote.Group_Name__c.getDescribe().isUpdateable();
+
+JavaScript/LWC:
+import { getFieldValue } from 'lightning/uiRecordApi';
+```
+
+**Common Objects with Read-Only Lookup Fields**:
+- `Quote.Group_Name__c` - Often a formula or external field
+- `Quote.OpportunityId` - Locked after Quote creation in certain orgs
+- `Task.WhatId` - Can be read-only depending on config
+- `Event.WhatId` - Can be read-only depending on config
+
+**Quick Check**:
+```apex
+// Get field info
+Map<String, SObjectField> fields = Account.getSObjectType()
+    .getDescribe()
+    .fields
+    .getMap();
+
+SObjectField customField = fields.get('CustomField__c');
+DescribeFieldResult dfr = customField.getDescribe();
+
+System.debug('Updateable: ' + dfr.isUpdateable());        // false = read-only
+System.debug('Type: ' + dfr.getType());                    // Can indicate reason
+System.debug('Is Calculated: ' + dfr.isCalculated());      // Formula field?
+System.debug('Label: ' + dfr.getLabel());                  // Field name for debugging
+```
+
+---
+
 ## Runtime Errors
 
 ### UNABLE_TO_LOCK_ROW
