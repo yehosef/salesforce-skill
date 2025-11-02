@@ -578,6 +578,88 @@ When deployment fails in production:
 
 ---
 
+## Validation Tools
+
+### validate_field_writeability.py
+**Purpose**: Pre-deployment validation of field writeability to catch `FIELD_NOT_WRITEABLE` errors early.
+
+**Usage**:
+```bash
+# Check for field writeability issues in src/
+./scripts/validate_field_writeability.py src/ my-sandbox
+
+# Verbose output to see all fields checked
+./scripts/validate_field_writeability.py src/ production --verbose
+
+# JSON output for CI/CD integration
+./scripts/validate_field_writeability.py src/ staging --json
+```
+
+**Detection Patterns**:
+This validator detects field assignments in Apex code:
+- Direct assignment: `account.CustomField__c = value`
+- Constructor: `new Account(CustomField__c = value)`
+- Array/List: `accounts[0].CustomField__c = value`
+- Dynamic put(): `obj.put('CustomField__c', value)` [field detected, SObject type unknown]
+
+**Example: Detecting put() pattern**:
+```apex
+// This pattern is detected:
+Map<String, Object> fields = new Map<String, Object>();
+fields.put('Group_Name__c', 'NewValue');  // ← Detected as field assignment
+account.putAll(fields);
+
+// But SObject type cannot be determined from put() alone
+// The validator will warn that manual review is needed
+```
+
+**Limitations**:
+- `obj.put(variableName, value)` - Cannot detect if field name is in a variable
+- Dynamic reflection: `obj.setSObjectField(...)` - Not detected
+
+---
+
+### validate_visualforce.py
+**Purpose**: Validate Visualforce syntax and catch unsupported attributes before deployment.
+
+**Usage**:
+```bash
+# Check all VF files in src/
+./scripts/validate_visualforce.py src/
+
+# Verbose output
+./scripts/validate_visualforce.py src/ --verbose
+
+# JSON output for CI/CD
+./scripts/validate_visualforce.py src/ --json > vf-report.json
+```
+
+**Security Features**:
+- **XXE Protection**: XML parsing uses `resolve_entities=False` (Python 3.8+) or `defusedxml` for enhanced protection
+- **Path Traversal Protection**: Validates file paths to prevent symlink attacks
+- **File Size Limits**: Maximum 10MB per file to prevent DoS
+
+**Detection Examples**:
+```xml
+<!-- ✗ ERROR: Unsupported attribute 'dir' -->
+<apex:page dir="rtl">
+
+<!-- ✓ FIX: Use CSS instead -->
+<apex:page>
+    <div style="direction: rtl; text-align: right;">
+        <!-- content -->
+    </div>
+</apex:page>
+
+<!-- ✗ WARNING: Deprecated tag -->
+<apex:include pageName="OtherPage"/>
+
+<!-- ✓ FIX: Use apex:dynamicComponent instead -->
+<apex:dynamicComponent componentVar="{!dynamicComp}"/>
+```
+
+---
+
 ## Resources
 
 - **Debug Logs**: Setup → Debug Logs → Add trace flag

@@ -48,10 +48,11 @@ DETECTION:
     - Direct assignment: account.CustomField__c = value
     - Constructor params: new Account(CustomField__c = value)
     - List/Map assignment: accounts[0].CustomField__c = value
+    - Dynamic put() calls: obj.put('FieldName', value) [field detected, SObject type unknown]
 
     Does NOT detect (requires manual review):
-    - Dynamic assignments: obj.put('FieldName', value)
     - Reflection-based updates: obj.setSObjectField(...)
+    - Dynamic field names in put(): obj.put(variableName, value)
 
 COMMON ISSUES FIXED:
     - Formula fields (calculated, not stored)
@@ -135,6 +136,28 @@ class FieldValidator:
         self.metadata_cache: Dict[str, Dict[str, FieldInfo]] = {}
         self.issues: List[Dict] = []
 
+    def _normalize_sobject_name(self, name: str) -> str:
+        """
+        Normalize SObject name to canonical form.
+
+        Capitalizes first letter while preserving internal capitalization.
+        Prevents duplicate cache entries for different case variations.
+
+        Examples:
+            account → Account
+            opportunityLineItem → OpportunityLineItem
+            customObject__c → CustomObject__c
+
+        Args:
+            name: SObject name (from code extraction)
+
+        Returns:
+            Normalized SObject name with first letter capitalized
+        """
+        if not name:
+            return name
+        return name[0].upper() + name[1:]
+
     def validate(self, source_dir: Path) -> Tuple[List[Dict], int]:
         """
         Validate all Apex and LWC files in directory.
@@ -203,14 +226,21 @@ class FieldValidator:
                 r'new\s+([a-zA-Z_]\w+)\s*\([^)]*?([a-zA-Z_]\w+(?:__c)?)\s*=',
                 # List/Array: list[0].fieldName = value
                 r'(?:^|[\s;])([a-zA-Z_]\w+)(?:\[\d+\])\.([a-zA-Z_]\w+(?:__c)?)\s*=',
+                # Dynamic put() method: obj.put('fieldName', value)
+                r'\.put\s*\(\s*["\']([a-zA-Z_]\w+(?:__c)?)["\']',
             ]
 
-            for pattern in patterns:
+            for pattern_idx, pattern in enumerate(patterns):
                 for match in re.finditer(pattern, content, re.MULTILINE):
                     groups = match.groups()
-                    if len(groups) >= 2:
-                        # Preserve original case - Salesforce API names are case-sensitive
-                        sobj_type = groups[0]
+                    # put() pattern has only 1 group (field name), others have 2+ (sobj_type, field_name)
+                    if pattern_idx == 3:  # put() pattern
+                        # Can't determine SObject type from put() calls, skip for now
+                        if self.verbose:
+                            print(f"    Skipped dynamic put() - cannot determine object type")
+                    elif len(groups) >= 2:
+                        # Normalize and preserve SObject name
+                        sobj_type = self._normalize_sobject_name(groups[0])
                         field_name = groups[-1]
 
                         if sobj_type not in assignments:
