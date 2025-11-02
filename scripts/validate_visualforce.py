@@ -77,27 +77,17 @@ from xml.etree import ElementTree as ET
 import argparse
 
 # Security: Use defusedxml to prevent XXE attacks if available
-# Otherwise use Python 3.8+ built-in entity resolution restriction
+# Python 3.8+ has built-in protections against billion laughs/quadratic blowup attacks
 try:
     from defusedxml import ElementTree as DefusedET
     SAFE_XML_PARSE = DefusedET.fromstring
     SECURITY_LEVEL = "HIGH"  # defusedxml provides comprehensive XXE protection
 except ImportError:
-    # Python 3.8+ secure fallback: disable external entity resolution
-    def SAFE_XML_PARSE(text: str) -> ET.Element:
-        """
-        Parse XML safely by disabling external entity resolution.
-
-        Uses Python 3.8+ built-in XMLParser(resolve_entities=False) to prevent XXE attacks.
-        This blocks external entity expansion while allowing normal XML entities.
-
-        For enhanced protection, install defusedxml:
-            pip install defusedxml
-        """
-        parser = ET.XMLParser(resolve_entities=False)
-        return ET.fromstring(text, parser=parser)
-
-    SECURITY_LEVEL = "MEDIUM"  # resolve_entities=False prevents most XXE attacks
+    # Python 3.8+ secure fallback: use standard ElementTree which has entity limits
+    # In Python 3.13+, there are additional protections against entity expansion attacks
+    # Reference: https://docs.python.org/3.8/library/xml.html#xml-vulnerabilities
+    SAFE_XML_PARSE = ET.fromstring
+    SECURITY_LEVEL = "MEDIUM"  # Python 3.8+ has default entity expansion limits
 
 
 class Colors:
@@ -277,30 +267,37 @@ class VFValidator:
         for elem in root.iter():
             tag = elem.tag
 
-            # Extract namespace and tag name
+            # Extract just the tag name (everything after the closing brace)
             if '}' in tag:
-                namespace, tagname = tag.split('}')
-                namespace = namespace[1:]
+                tagname = tag.split('}')[1]
             else:
-                namespace = ''
                 tagname = tag
 
-            full_tag = f"{namespace}:{tagname}" if namespace else tagname
+            # Build the common key format for lookup (namespace:tagname)
+            # For apex tags, this is "apex:tagname"
+            # We check deprecated_tags with just the tag name since that's what's keyed
+            deprecated_info = None
 
-            # Check if deprecated
-            if full_tag in VF_KNOWN_ISSUES.get('deprecated_tags', {}):
-                replacement = VF_KNOWN_ISSUES['deprecated_tags'][full_tag]
+            # Check against known deprecated tags
+            for key in VF_KNOWN_ISSUES.get('deprecated_tags', {}).keys():
+                # Key is like 'apex:include', we extract 'include' from that and match
+                key_tagname = key.split(':')[-1] if ':' in key else key
+                if tagname == key_tagname or tagname == key:
+                    deprecated_info = VF_KNOWN_ISSUES['deprecated_tags'][key]
+                    break
 
+            if deprecated_info:
+                display_tag = f"apex:{tagname}" if tagname else tag
                 issue = {
                     'type': 'DEPRECATED_TAG',
                     'file': str(file_path),
-                    'tag': full_tag,
+                    'tag': display_tag,
                     'severity': 'warning',
-                    'message': f'Deprecated tag: {full_tag}',
-                    'suggestion': f'Replace with: {replacement}'
+                    'message': f'Deprecated tag: {display_tag}',
+                    'suggestion': f'Replace with: {deprecated_info}'
                 }
                 self.issues.append(issue)
-                print(f"  {Colors.YELLOW}⚠ {file_path.name}:{Colors.RESET} Deprecated: {full_tag}")
+                print(f"  {Colors.YELLOW}⚠ {file_path.name}:{Colors.RESET} Deprecated: {display_tag}")
 
     def _check_common_patterns(self, file_path: Path, content: str):
         """Check for common problematic patterns."""

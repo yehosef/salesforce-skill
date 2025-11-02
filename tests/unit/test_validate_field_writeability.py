@@ -105,10 +105,10 @@ class TestFieldAssignmentDetection(unittest.TestCase):
     def test_multiple_fields(self):
         """Test detection of multiple field assignments."""
         code = """
-        Account acc = new Account();
-        acc.Name = 'Test';
-        acc.Phone = '555-1234';
-        acc.CustomField__c = 'Custom';
+        Account account = new Account();
+        account.Name = 'Test';
+        account.Phone = '555-1234';
+        account.CustomField__c = 'Custom';
         """
         assignments = self.validator._extract_assignments(Path('test.cls'), code)
         self.assertIn('Account', assignments)
