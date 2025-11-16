@@ -80,7 +80,7 @@ A comprehensive Claude Code skill that supercharges Salesforce development with 
 
 1. **Download the skill:**
    ```bash
-   git clone https://github.com/yourusername/salesforce-skill.git
+   git clone https://github.com/yehosef/salesforce-skill.git
    ```
 
 2. **Install to Claude Code:**
@@ -94,7 +94,7 @@ A comprehensive Claude Code skill that supercharges Salesforce development with 
    ```
 
 4. **Use the skill:**
-   Just ask Claude Code Salesforce-related questions and the skill will automatically activate!
+   Just ask Claude Code Salesforce-related questions and the skill will automatically activate!  Sometimes it's necessary to call it explicity.
 
 ---
 
@@ -133,28 +133,11 @@ cp ~/.claude/skills/salesforce-dev/assets/validate-pr.yml .github/workflows/
 
 ---
 
-## 📊 Productivity Impact
-
-**Estimated Time Savings per Developer per Week:**
-- Error troubleshooting: 3-4 hours
-- Org comparison: 2-3 hours
-- Scratch org setup: 1-2 hours
-- CI/CD automation: 5-10 hours (one-time)
-- **Phase 2 Additions:**
-  - Data migration & duplicate detection: 2-3 hours
-  - Performance profiling & optimization: 3-4 hours
-  - Rollback procedures: 1-2 hours (emergency situations)
-  - Org health monitoring: 1 hour
-
-**Total: 13-19 hours/week = 32-48% productivity increase**
-
----
-
 ## 🎯 Common Use Cases
 
 ### 1. Troubleshooting Deployment Errors
 Ask Claude Code:
-> "I'm getting UNABLE_TO_LOCK_ROW error during deployment"
+> "I'm getting UNABLE_TO_LOCK_ROW error during salesforce deployment"
 
 Claude will reference the common-errors guide and provide specific solutions.
 
@@ -166,13 +149,13 @@ Claude will reference soql-patterns and provide bulkification examples.
 
 ### 3. Setting Up CI/CD
 Ask Claude Code:
-> "Help me set up automated deployments with GitHub Actions"
+> "Help me set up automated salesforce deployments with GitHub Actions"
 
 Claude will guide you through using the CI/CD templates.
 
 ### 4. Comparing Environments
 Ask Claude Code:
-> "What's different between my sandbox and production?"
+> "What's different between my sandbox and production salesforce instances?"
 
 Claude will run the compare_orgs script and show you the differences.
 
